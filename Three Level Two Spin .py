@@ -8,8 +8,8 @@ from Functions import *
 Nr=10
 omega1=1.66*(10**-4)/3
 omega2=.78*(10**-4)/3
-lemda1=9*10**-5
-lemda2=10**-5
+lemda1=9*10**-4
+lemda2=10**-4
 INR=np.eye(Nr)
 C=np.zeros((Nr,Nr)) 
 
@@ -23,7 +23,7 @@ W0=(np.matrix(np.zeros((Nr,1))))
 W0[0,0]=1
 
 print('Wo- ' + str(W0))
-K0=(np.matrix([1,0,0])).T
+K0=(np.matrix([0,1,0])).T
 
 print('Ko- ' + str(K0))
 #NV levels
@@ -31,7 +31,7 @@ INV=np.eye(3)
 tempinv=TensorProduct(INV,INV)
 #Interaction
 
-
+Hpr=[]
 
 #Hamiltonian
 H1=TensorProduct(omega1*(np.dot(C,A)),TensorProduct(INV,INV))+TensorProduct(omega2*(np.dot(C,A)),TensorProduct(INV,INV))
@@ -49,17 +49,10 @@ ps0=[]
 psp=[]
 psm=[]
 dt=np.linspace(0,Tmax,grid)
-def delta2(t):
-	if t>0.9:
-		if t<1.1:
-			#input('..')
-			return 1
-	return 0
-def delta(t):
-	return 1
+delt=delta(dt)
 def Ham2(t):
 	omegao=1
-	ubt=.001*omegao*delta(t)
+	ubt=.01*omegao*delt[t]
 	omegaplus =omegao+ubt
 	omegaminus=omegao-ubt
 	omega=0.5*np.sqrt((omegaplus**2)+(omegaminus**2))
@@ -93,11 +86,21 @@ def Ham2(t):
 	t2=TensorProduct(INR,TensorProduct(INV,X2))
 	H2=Hc+(np.dot(TA,T1))+(np.dot(TC,T2))+(np.dot(TA,t1))+(np.dot(TC,t2))
 	return H2
+def unitary(H,dt):
+	u=0
+	for i in range(4):
+		u=u+((-1j**i)*(dt**i)*(H**i))
+	return u
+
+Dt=dt[1]-dt[0]
 for j in range(grid):
 	t=dt[j]
-	H=H1+Ham2(t)
-	U=operatorfunc(1j*t*H,'e')
+	#Hpr.append(H1+Ham2(t))
+	H=H1+Ham2(j)
+	#input(H)
+	U=operatorfunc(1j*Dt*H,'e')
 	PSIT=np.dot(U,PSI)
+	PSI=PSIT
 	RHO=np.dot(PSIT,(np.conjugate(PSIT).T))
 	print(">>>>>>>>t-"+str(t)+"\nTR(RHO)-"+str(np.trace(RHO)))
 	Pab=ptr(RHO,basis(Nr),2,tempinv)
@@ -120,6 +123,6 @@ elif chgr==2 :
 	plt.plot(dt,psp,'b',label='Prob of state(+1)')
 else:
 	plt.plot(dt,neg,'b',label="Negativity")
-plt.suptitle('Two Spin - Spin:1 plot - Initial State : [1,0,0]')
+plt.suptitle('Two Spin - Spin:1 plot - Initial State : [0,1,0]')
 plt.legend()
 plt.show()

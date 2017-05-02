@@ -82,8 +82,18 @@ print(np.matrix([0,1,3]).T)
 
 """
 
-
-
+def delta(tm):
+    x=np.zeros(len(tm))
+    c=0
+    k=0
+    for i in tm:
+        x[k]=0
+        if int(i) > c:
+           c=c+1
+           x[k]=1
+        k=k+1
+    return x
+           
 def operatorfunc(M,choice):
     if choice=='e':
        return LA.expm(M)
@@ -97,3 +107,5 @@ def negativity(M):
     for i in x:
         n=n+(((abs(i))-i)/2)
     return n 
+
+    
