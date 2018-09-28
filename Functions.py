@@ -4,6 +4,14 @@ from numpy import kron as TensorProduct
 from scipy import linalg as LA
 
 
+
+def creaann(n):
+    a=np.zeros((n,n),dtype=complex)
+    for i in range(1,n):
+    	a[i,i-1]=np.sqrt(i)
+    ad=np.conjugate(a).T
+    return (a,ad)
+
 def ptr(p,b,ch,ide):
     x=0
     t1=0
@@ -41,11 +49,8 @@ def basis(n):
         x[i,i]=1
         t.append(np.matrix(x[i]).T)
     return t
-    
 
-"""
-
-def operatorfunc(M,choice):
+def operatorfunc2(M,choice):
     td2,tp=LA.schur(M,'complex')
     td=td2
     for i in range(td.shape[0]):
@@ -57,7 +62,7 @@ def operatorfunc(M,choice):
               td[i,i]=np.log(td[i,i])/np.log(int(np.sqrt(td.shape[0])))
     u=np.dot(tp,np.dot(td,np.conjugate(tp).T))
     return (u,td2,tp)
-def entropyS(M):
+def entropyS2(M):
     td,tp=LA.schur(M,'complex')
     s=0
     for i in range(td.shape[0]):  
@@ -67,7 +72,15 @@ def entropyS(M):
     #print(-1*np.trace(st))
     s=-1*s
     return -1*np.trace(st) 
+def gencomm(A,B,i):
+    return (np.dot(A,B)-((-1**i)*np.dot(B,A)))
 
+def ipr(p):
+    c=0
+    for i in range(p.shape[0]):
+        c=c+(p[i,i]*p[i,i])
+    return (1/c)
+"""
 x,y,z=pauli()
 
 p=np.zeros((4,4),dtype=np.complex_)
@@ -80,7 +93,7 @@ t=basis(4)
 print(t)
 print(np.matrix([0,1,3]).T)
 
-"""
+
 
 def delta(tm):
     x=np.zeros(len(tm))
@@ -93,7 +106,7 @@ def delta(tm):
            x[k]=1
         k=k+1
     return x
-           
+ """          
 def operatorfunc(M,choice):
     if choice=='e':
        return LA.expm(M)
@@ -108,4 +121,47 @@ def negativity(M):
         n=n+(((abs(i))-i)/2)
     return n 
 
-    
+def Spin(N):
+	sx,sy,sz=pauli()
+	I=np.eye(2,dtype=complex)
+	t=1
+	l=0
+	for i in range(N):
+		t=1
+		print(i)
+		for j in range(i):
+			t=TensorProduct(t,I)
+		t=TensorProduct(t,sz/2)
+		for j in range(N-i-1):
+			t=TensorProduct(t,I)
+		
+		l=l+t
+	
+	Sz=l
+	t=1
+	l=0
+	for i in range(N):
+		t=1
+		for j in range(i):
+			t=TensorProduct(t,I)
+		t=TensorProduct(t,sx/2)
+		for j in range(N-i-1):
+			t=TensorProduct(t,I)
+		l=l+t
+	Sx=l
+	t=1
+	l=0
+	for i in range(N):
+		t=1
+		for j in range(i):
+			t=TensorProduct(t,I)
+		t=TensorProduct(t,sy/2)
+		for j in range(N-i-1):
+			t=TensorProduct(t,I)
+		l=l+t
+	Sy=l
+	Id=1
+	for i in range(N):
+		Id=TensorProduct(Id,I)
+	
+	return(Sx,Sy,Sz,Id)
